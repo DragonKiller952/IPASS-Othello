@@ -1,5 +1,7 @@
 import random
-
+from tkinter import *
+canvas = Canvas(width=800, height=800, bg='green', highlightthickness=0)
+canvas.pack()
 
 def isValidMove(board, tile, ystart, xstart):
     if (xstart > 7 or xstart < 0) or (ystart > 7 or ystart < 0):
@@ -122,6 +124,37 @@ def countValue(board, value):
                 count -= value[i][j]
     return count
 
+def createBoard():
+    canvas.create_line(0, 0, 0, 800, fill="dark green", width=4)
+    canvas.create_line(100, 0, 100, 800, fill="dark green", width=4)
+    canvas.create_line(200, 0, 200, 800, fill="dark green", width=4)
+    canvas.create_line(300, 0, 300, 800, fill="dark green", width=4)
+    canvas.create_line(400, 0, 400, 800, fill="dark green", width=4)
+    canvas.create_line(500, 0, 500, 800, fill="dark green", width=4)
+    canvas.create_line(600, 0, 600, 800, fill="dark green", width=4)
+    canvas.create_line(700, 0, 700, 800, fill="dark green", width=4)
+    canvas.create_line(800, 0, 800, 800, fill="dark green", width=4)
+
+    canvas.create_line(0, 0, 800, 0, fill="dark green", width=4)
+    canvas.create_line(0, 100, 800, 100, fill="dark green", width=4)
+    canvas.create_line(0, 200, 800, 200, fill="dark green", width=4)
+    canvas.create_line(0, 300, 800, 300, fill="dark green", width=4)
+    canvas.create_line(0, 400, 800, 400, fill="dark green", width=4)
+    canvas.create_line(0, 500, 800, 500, fill="dark green", width=4)
+    canvas.create_line(0, 600, 800, 600, fill="dark green", width=4)
+    canvas.create_line(0, 700, 800, 700, fill="dark green", width=4)
+    canvas.create_line(0, 800, 800, 800, fill="dark green", width=4)
+
+    canvas.create_window(300, 300)
+
+def putStones(board):
+    for i in range(8):
+        for j in range(8):
+            if board[i][j] == 'X':
+                canvas.create_oval(5+100*j, 5+100*i, 95+100*j, 95+100*i, fill='black', outline='gray18', width=4)
+            elif board[i][j] == 'O':
+                canvas.create_oval(5+100*j, 5+100*i, 95+100*j, 95+100*i, fill='white', outline='gray85', width=4)
+
 
 def othello():
     board = [['.', '.', '.', '.', '.', '.', '.', '.'],
@@ -144,7 +177,12 @@ def othello():
     player = 'X'
     print('*  -  -  -  -  -  -  -  -  *\n|  {}  |\n*  -  -  -  -  -  -  -  -  *'
           .format('  |\n|  '.join(map('  '.join, board))))
-    while any('.' in i for i in board):
+
+    createBoard()
+    canvas.update()
+
+    # while any('.' in i for i in board):
+    for i in range(5):
         print("X heeft "+str(countScore(board, 'X'))+" punten, en O heeft "+str(countScore(board, 'O'))+" punten")
         if player == 'X':
             if allPossibilities(board, player):
@@ -156,6 +194,8 @@ def othello():
             player = 'X'
         print('*  -  -  -  -  -  -  -  -  *\n|  {}  |\n*  -  -  -  -  -  -  -  -  *'
               .format('  |\n|  '.join(map('  '.join, board))))
+        putStones(board)
+        canvas.update()
 
     print('*  -  -  -  -  -  -  -  -  *\n|  {}  |\n*  -  -  -  -  -  -  -  -  *'
           .format('  |\n|  '.join(map('  '.join, board))))
@@ -163,6 +203,10 @@ def othello():
 
 
 othello()
-
+mainloop()
 # print('*  -  -  -  -  -  -  -  -  *\n|  {}  |\n*  -  -  -  -  -  -  -  -  *'
 #       .format('  |\n|  '.join(map('  '.join, board2))))
+
+
+
+
