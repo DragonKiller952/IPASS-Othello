@@ -2,8 +2,10 @@ import random
 import time
 from tkinter import *
 from math import *
+
 canvas = Canvas(width=800, height=800, bg='green', highlightthickness=0)
 canvas.pack()
+
 
 def isValidMove(board, tile, ystart, xstart):
     if (xstart > 7 or xstart < 0) or (ystart > 7 or ystart < 0):
@@ -110,6 +112,7 @@ def countValue(board, value):
                 count -= value[i][j]
     return count
 
+
 def createBoard():
     canvas.create_line(0, 0, 0, 800, fill="dark green", width=4)
     canvas.create_line(100, 0, 100, 800, fill="dark green", width=4)
@@ -133,22 +136,23 @@ def createBoard():
 
     canvas.create_window(300, 300)
 
+
 def putStones(board):
     for i in range(8):
         for j in range(8):
             if board[i][j] == 'X':
-                canvas.create_oval(5+100*j, 5+100*i, 95+100*j, 95+100*i, fill='black', outline='gray18', width=4)
+                canvas.create_oval(5 + 100 * j, 5 + 100 * i, 95 + 100 * j, 95 + 100 * i, fill='black', outline='gray18',
+                                   width=4)
             elif board[i][j] == 'O':
-                canvas.create_oval(5+100*j, 5+100*i, 95+100*j, 95+100*i, fill='white', outline='gray85', width=4)
-
+                canvas.create_oval(5 + 100 * j, 5 + 100 * i, 95 + 100 * j, 95 + 100 * i, fill='white', outline='gray85',
+                                   width=4)
 
 
 def othello(coords):
     global board
-    x=floor(coords.x/100)
+    x = floor(coords.x / 100)
     y = floor(coords.y / 100)
-    print(str(x)+'|'+str(y))
-
+    print(str(x) + '|' + str(y))
 
     values = [['.', '.', '.', '.', '.', '.', '.', '.'],
               ['.', '.', '.', '.', '.', '.', '.', '.'],
@@ -160,24 +164,28 @@ def othello(coords):
               ['.', '.', '.', '.', '.', '.', '.', '.']]
     player = 'X'
 
-    createBoard()
-
     state = isValidMove(board, 'X', y, x)[0]
     print(state)
-    if allPossibilities(board, player) and state:
-        board = playerturn(board, y, x)
-    canvas.delete("all")
-    createBoard()
-    putStones(board)
-    canvas.update()
-    time.sleep(1)
-    player = 'O'
-    if allPossibilities(board, player) and state:
-        board = computerturn(board)
-    canvas.delete("all")
-    createBoard()
-    putStones(board)
-
+    if allPossibilities(board, 'X'):
+        if allPossibilities(board, player) and state:
+            board = playerturn(board, y, x)
+        canvas.delete("all")
+        createBoard()
+        putStones(board)
+        canvas.update()
+        time.sleep(0.5)
+        player = 'O'
+        if allPossibilities(board, player) and state:
+            board = computerturn(board)
+        canvas.delete("all")
+        createBoard()
+        putStones(board)
+    else:
+        if allPossibilities(board, 'O'):
+            board = computerturn(board)
+        canvas.delete("all")
+        createBoard()
+        putStones(board)
 
 
 board = [['.', '.', '.', '.', '.', '.', '.', '.'],
@@ -188,6 +196,10 @@ board = [['.', '.', '.', '.', '.', '.', '.', '.'],
          ['.', '.', '.', '.', '.', '.', '.', '.'],
          ['.', '.', '.', '.', '.', '.', '.', '.'],
          ['.', '.', '.', '.', '.', '.', '.', '.']]
+
+createBoard()
+putStones(board)
+canvas.update()
 
 canvas.bind("<Button-1>", othello)
 mainloop()
