@@ -2,6 +2,7 @@ import random
 import time
 from tkinter import *
 from math import *
+from tkinter.messagebox import showinfo
 
 canvas = Canvas(width=800, height=800, bg='green', highlightthickness=0)
 canvas.pack()
@@ -186,6 +187,24 @@ def othello(coords):
         canvas.delete("all")
         createBoard()
         putStones(board)
+
+    if not any('.' in i for i in board):
+        X = 0
+        O = 0
+        for i in board:
+            X += i.count('X')
+            O += i.count('O')
+
+        if O>X:
+            showinfo("Resultaat", "Wit heeft gewonnen met {} punten!".format(O))
+        elif X>O:
+            showinfo("Resultaat", "Zwart heeft gewonnen met {} punten!".format(X))
+        else:
+            showinfo("Resultaat", "Het is gelijkspel!")
+
+        print(
+            "X heeft " + str(countScore(board, 'X')) + " punten, en O heeft " + str(countScore(board, 'O')) + " punten")
+
 
 
 board = [['.', '.', '.', '.', '.', '.', '.', '.'],
