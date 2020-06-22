@@ -211,10 +211,6 @@ def putStones(board):
                                    width=4)
 
 
-def reset():  # Reset het programma
-    os.execl(sys.executable, sys.executable, *sys.argv)
-
-
 def othello(coords):
     # Plays the next human and computer move based on the position the human clicked on on the board
     global board
@@ -296,6 +292,27 @@ def othello(coords):
 
         # print(
         #     "X heeft " + str(countScore(board, 'X')) + " punten, en O heeft " + str(countScore(board, 'O')) + " punten")
+
+
+def reset():  # Reset het programma
+    global board
+    board = [['.', '.', '.', '.', '.', '.', '.', '.'],
+             ['.', '.', '.', '.', '.', '.', '.', '.'],
+             ['.', '.', '.', '.', '.', '.', '.', '.'],
+             ['.', '.', '.', 'X', 'O', '.', '.', '.'],
+             ['.', '.', '.', 'O', 'X', '.', '.', '.'],
+             ['.', '.', '.', '.', '.', '.', '.', '.'],
+             ['.', '.', '.', '.', '.', '.', '.', '.'],
+             ['.', '.', '.', '.', '.', '.', '.', '.']]
+    canvas.delete("all")
+    canvas2.delete("all")
+
+    createBoard()
+    putStones(board)
+    canvas.update()
+
+    button1 = Button(canvas2, text='Restart', command=reset, width=15, height=4)
+    button1_window = canvas2.create_window(100, 10, anchor=N, window=button1)
 
 
 board = [['.', '.', '.', '.', '.', '.', '.', '.'],
