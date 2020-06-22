@@ -1,20 +1,26 @@
 import math
+import os
 import random
 import time
 from tkinter import *
 from math import *
 from tkinter.messagebox import showinfo
-
-canvas = Canvas(width=800, height=800, bg='green', highlightthickness=0)
-canvas.pack()
+frame = Frame(width=1000, height=800)
+frame.pack()
+canvas = Canvas(frame, width=800, height=800, bg='forest green', highlightthickness=0)
+canvas.pack(side='left')
+canvas2 = Canvas(frame, width=200, height=800, bg='khaki2', highlightthickness=0)
+canvas2.pack(side='right')
 
 
 def isValidMove(board, tile, ystart, xstart):
+    # Checks if the move is on the board and if there is no stone already on that spot
     if (xstart > 7 or xstart < 0) or (ystart > 7 or ystart < 0):
         return False, []
     elif board[ystart][xstart] != '.':
         return False, []
 
+    # Calculates which stones will be changed by doing said move in every possible direction
     directions = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]]
     check = []
     allchange = []
@@ -41,6 +47,7 @@ def isValidMove(board, tile, ystart, xstart):
             else:
                 check.append(False)
                 allchange.append([])
+    # Checks if stones will be changed by doing the move and returns the stones that will be changed
     if True in check:
         return True, allchange
     else:
@@ -48,6 +55,7 @@ def isValidMove(board, tile, ystart, xstart):
 
 
 def allPossibilities(board, player):
+    # Checks all possible moves a player has on the board
     posibilities = []
     for y in range(8):
         for x in range(8):
@@ -57,19 +65,13 @@ def allPossibilities(board, player):
 
 
 def boardCopy(oldboard):
+    # Creates a identical copy of the given board
     newboard = [i[:] for i in oldboard]
     return newboard
 
 
-# def allpossBoard(board, player):
-#     board2 = boardCopy(board)
-#     allposs = allPossibilities(player)
-#     for i in allposs:
-#         board2[i[0]][i[1]] = '*'
-#     return board2
-
-
 def changeBoard(board, player, y, x):
+    # Carrys out all changes done by the given move
     changes = isValidMove(board, player, y, x)
     board[y][x] = player
     for i in changes[1]:
@@ -80,6 +82,7 @@ def changeBoard(board, player, y, x):
 
 
 def playerturn(board, y, x):
+    # Recieves move and changes the board accordingly
     positiey = y
     positiex = x
 
@@ -89,6 +92,7 @@ def playerturn(board, y, x):
 
 
 def countValue(board, values):
+    # Gives the current board a value for the algorithm of the computer
     count = 0
     for i in range(len(board)):
         for j in range(len(board[i])):
@@ -100,7 +104,9 @@ def countValue(board, values):
 
 
 def alphabeta(upperbest, move, depth, maxdepth, board, values):
+    # Uses alpha-beta pruning to determine which move is the best to do
     if depth % 2 == 0:
+        # Simulates a move for the computer player
         if depth == maxdepth:
             chosenscore = countValue(board, values)
             chosenmove = move
@@ -114,22 +120,17 @@ def alphabeta(upperbest, move, depth, maxdepth, board, values):
                 for i in range(len(moves)):
                     newboard = boardCopy(board)
                     changeBoard(newboard, 'O', moves[i][0], moves[i][1])
-                    themove, thescore = alphabeta(bestscore, moves[i], depth+1, maxdepth, newboard, values)
-                    if thescore>bestscore:
+                    themove, thescore = alphabeta(bestscore, moves[i], depth + 1, maxdepth, newboard, values)
+                    if thescore > bestscore:
                         bestscore = thescore
                         bestmove = moves[i]
-                    if bestscore>upperbest:
-                        # print('maximum')
-                        # print(depth)
-                        # print(themove)
-                        # print(upperbest, bestscore)
-                        # print(i, len(moves))
-                        # print('ja das te groot')
+                    if bestscore > upperbest:
                         break
 
                 chosenscore = bestscore
                 chosenmove = bestmove
     else:
+        # Simulates a move for the human player
         if depth == maxdepth:
             chosenscore = countValue(board, values)
             chosenmove = move
@@ -147,13 +148,7 @@ def alphabeta(upperbest, move, depth, maxdepth, board, values):
                     if thescore < bestscore:
                         bestscore = thescore
                         bestmove = moves[i]
-                    if bestscore<upperbest:
-                        # print('minimum')
-                        # print(depth)
-                        # print(themove)
-                        # print(upperbest, bestscore)
-                        # print(i, len(moves))
-                        # print('ja das te klein')
+                    if bestscore < upperbest:
                         break
 
                 chosenscore = bestscore
@@ -163,14 +158,14 @@ def alphabeta(upperbest, move, depth, maxdepth, board, values):
 
 
 def computerturn(board, values):
-    poss = allPossibilities(board, 'O')
-    # move = random.choice(poss)
+    # Calculates a move and changes the board accordingly
     move = alphabeta(inf, None, 0, 6, board, values)[0]
     board = changeBoard(board, 'O', move[0], move[1])
     return board
 
 
 def countScore(board, player):
+    # Count how many stones of the given player are on the board
     count = 0
     for i in range(len(board)):
         for j in range(len(board[i])):
@@ -180,6 +175,7 @@ def countScore(board, player):
 
 
 def createBoard():
+    # Initialises the visual board structure
     canvas.create_line(0, 0, 0, 800, fill="dark green", width=4)
     canvas.create_line(100, 0, 100, 800, fill="dark green", width=4)
     canvas.create_line(200, 0, 200, 800, fill="dark green", width=4)
@@ -204,6 +200,7 @@ def createBoard():
 
 
 def putStones(board):
+    # Puts stones on the visual board based on the internal board
     for i in range(8):
         for j in range(8):
             if board[i][j] == 'X':
@@ -214,26 +211,31 @@ def putStones(board):
                                    width=4)
 
 
+def reset():  # Reset het programma
+    os.execl(sys.executable, sys.executable, *sys.argv)
+
+
 def othello(coords):
+    # Plays the next human and computer move based on the position the human clicked on on the board
     global board
     x = floor(coords.x / 100)
     y = floor(coords.y / 100)
-    print(str(x) + '|' + str(y))
+    # print(str(x) + '|' + str(y))
 
-    values = [[8, -8, 3, 3, 3, 3, -8, 8],
+    values = [[50, -8, 3, 3, 3, 3, -8, 50],
               [-8, -10, 2, 2, 2, 2, -10, -8],
               [3, 2, 1, 1, 1, 1, 2, 3],
               [3, 2, 1, 1, 1, 1, 2, 3],
               [3, 2, 1, 1, 1, 1, 2, 3],
               [3, 2, 1, 1, 1, 1, 2, 3],
               [-8, -10, 2, 2, 2, 2, -10, -8],
-              [8, -8, 3, 3, 3, 3, -8, 8]]
+              [50, -8, 3, 3, 3, 3, -8, 50]]
     player = 'X'
 
-    print(countValue(board, values))
+    # print(countValue(board, values))
 
     state = isValidMove(board, 'X', y, x)[0]
-    print(state)
+    # print(state)
     if allPossibilities(board, 'X'):
         if allPossibilities(board, player) and state:
             board = playerturn(board, y, x)
@@ -255,23 +257,45 @@ def othello(coords):
         createBoard()
         putStones(board)
 
-    if not any('.' in i for i in board):
+    if not any('.' in i for i in board) or not any('X' in i for i in board) or not any('O' in i for i in board):
         X = 0
         O = 0
         for i in board:
             X += i.count('X')
             O += i.count('O')
-
-        if O>X:
-            showinfo("Resultaat", "Wit heeft gewonnen met {} punten!".format(O))
-        elif X>O:
-            showinfo("Resultaat", "Zwart heeft gewonnen met {} punten!".format(X))
+        if O > X:
+            label1 = Label(canvas2, text='Het spel is beeindigt', width=20, height=4)
+            label2 = Label(canvas2, text="Zwart heeft {} punten".format(X), width=20, height=4)
+            label3 = Label(canvas2, text="Wit heeft {} punten".format(O), width=20, height=4)
+            label4 = Label(canvas2, text="De winnaar is wit!".format(O), width=20, height=4)
+            label1_window = canvas2.create_window(100, 200, anchor=N, window=label1)
+            label2_window = canvas2.create_window(100, 300, anchor=N, window=label2)
+            label3_window = canvas2.create_window(100, 400, anchor=N, window=label3)
+            label4_window = canvas2.create_window(100, 500, anchor=N, window=label4)
+            # showinfo("Resultaat", "Wit heeft gewonnen met {} punten!".format(O))
+        elif X > O:
+            label1 = Label(canvas2, text='Het spel is beeindigt', width=20, height=4)
+            label2 = Label(canvas2, text="Zwart heeft {} punten".format(X), width=20, height=4)
+            label3 = Label(canvas2, text="Wit heeft {} punten".format(O), width=20, height=4)
+            label4 = Label(canvas2, text="De winnaar is zwart!".format(O), width=20, height=4)
+            label1_window = canvas2.create_window(100, 200, anchor=N, window=label1)
+            label2_window = canvas2.create_window(100, 300, anchor=N, window=label2)
+            label3_window = canvas2.create_window(100, 400, anchor=N, window=label3)
+            label4_window = canvas2.create_window(100, 500, anchor=N, window=label4)
+            # showinfo("Resultaat", "Zwart heeft gewonnen met {} punten!".format(X))
         else:
-            showinfo("Resultaat", "Het is gelijkspel!")
+            label1 = Label(canvas2, text='Het spel is beeindigt', width=20, height=4)
+            label2 = Label(canvas2, text="Zwart heeft {} punten".format(X), width=20, height=4)
+            label3 = Label(canvas2, text="Wit heeft {} punten".format(O), width=20, height=4)
+            label4 = Label(canvas2, text="Het is gelijkspel!".format(O), width=20, height=4)
+            label1_window = canvas2.create_window(100, 200, anchor=N, window=label1)
+            label2_window = canvas2.create_window(100, 300, anchor=N, window=label2)
+            label3_window = canvas2.create_window(100, 400, anchor=N, window=label3)
+            label4_window = canvas2.create_window(100, 500, anchor=N, window=label4)
+            # showinfo("Resultaat", "Het is gelijkspel!")
 
-        print(
-            "X heeft " + str(countScore(board, 'X')) + " punten, en O heeft " + str(countScore(board, 'O')) + " punten")
-
+        # print(
+        #     "X heeft " + str(countScore(board, 'X')) + " punten, en O heeft " + str(countScore(board, 'O')) + " punten")
 
 
 board = [['.', '.', '.', '.', '.', '.', '.', '.'],
@@ -283,10 +307,22 @@ board = [['.', '.', '.', '.', '.', '.', '.', '.'],
          ['.', '.', '.', '.', '.', '.', '.', '.'],
          ['.', '.', '.', '.', '.', '.', '.', '.']]
 
+
+# board = [['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+#          ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+#          ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+#          ['X', 'X', 'X', 'X', 'O', 'X', 'X', 'X'],
+#          ['X', 'X', 'X', 'O', 'X', 'X', 'X', 'X'],
+#          ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+#          ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+#          ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X']]
+
 createBoard()
 putStones(board)
 canvas.update()
 
+button1 = Button(canvas2, text='Restart', command=reset, width=15, height=4)
+button1_window = canvas2.create_window(100, 10, anchor=N, window=button1)
 
 canvas.bind("<Button-1>", othello)
 mainloop()
